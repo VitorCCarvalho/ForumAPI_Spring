@@ -6,5 +6,15 @@ public class Forum {
 	private String Name;
 
 	private String Description;
+
+	public void setName(String name) {
+		Name = name;
+	}
+
+	public void setDescription(String description) {
+		Description = description;
+	}
+	
+	
 	
 }
