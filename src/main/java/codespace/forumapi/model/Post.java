@@ -20,10 +20,6 @@ public class Post {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getThreadId() {
         return threadId;
     }
@@ -44,10 +40,6 @@ public class Post {
         return userId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public Date getDateCreated() {
         return dateCreated;
     }
@@ -55,4 +47,6 @@ public class Post {
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
     }
+
 }
+

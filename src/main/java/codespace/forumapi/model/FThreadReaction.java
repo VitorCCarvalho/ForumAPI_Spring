@@ -1,6 +1,5 @@
 package codespace.forumapi.model;
 
-import java.util.*;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,15 +8,28 @@ public class FThreadReaction {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int ThreadId;
-
 	private String UserId;
 	private boolean Reaction;
-	public Object getReaction() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getReaction'");
+
+	public boolean getReaction() {
+		return Reaction;
 	}
-    public void setReaction(Object reaction2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setReaction'");
-    }
+	public void setReaction(boolean reaction) {
+		Reaction = reaction;
+	}
+
+	public int getThreadId() {
+		return ThreadId;
+	}
+	public void setThreadId(int threadId) {
+		ThreadId = threadId;
+	}
+
+	public String getUserId() {
+		return UserId;
+	}
+	public void setUserId(String userId) {
+		UserId = userId;
+	}
+
 }

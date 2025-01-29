@@ -25,23 +25,31 @@ public class FThread {
     @Column(name = "date_created")
 	private Date DateCreated;
 
-	public Object getContent() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getContent'");
-	}
-
-    public void setContent(Object content) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setContent'");
+    public int getForumID() {
+        return ForumID;
     }
 
-    public Object getTitle() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTitle'");
+    public void setForumID(int forumID) {
+        ForumID = forumID;
     }
 
-    public void setTitle(Object title) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setTitle'");
+    public String getName() {
+        return Name;
     }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+    public String getText() {
+        return Text;
+    }
+
+    public void setText(String text) {
+        Text = text;
+    }
+
+	
+
+
 }
