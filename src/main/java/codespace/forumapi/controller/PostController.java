@@ -7,6 +7,7 @@ import codespace.forumapi.model.Post;
 import codespace.forumapi.repository.PostRepository;
 import java.util.List;
 import java.util.Date;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/post")
@@ -21,19 +22,20 @@ public class PostController {
         return postRepository.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Post> getPostById(int id) {
+        Optional<Post> post = postRepository.findById(id);
+        return post.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     // Get posts by thread
     @GetMapping("/thread/{threadId}")
-    public List<Post> getPostsByThread(@PathVariable int threadId) {
-        return postRepository.findByThreadId(threadId);
+    public ResponseEntity<List<Post>> getPostsByThread(@PathVariable int threadId) {
+        Optional<List<Post>> posts = postRepository.findByThreadId(threadId);
+        return posts.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Get a single post
-    @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable int id) {
-        return postRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
 
     // Create a new post
     @PostMapping
@@ -42,26 +44,19 @@ public class PostController {
         return postRepository.save(post);
     }
 
-    // Update a post
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable int id, @RequestBody Post postDetails) {
-        return postRepository.findById(id)
-                .map(post -> {
-                    post.setText(postDetails.getText());
-                    Post updatedPost = postRepository.save(post);
-                    return ResponseEntity.ok(updatedPost);
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Delete a post
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable int id) {
-        return postRepository.findById(id)
-                .map(post -> {
-                    postRepository.delete(post);
-                    return ResponseEntity.ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Post> updatePost(@PathVariable int id, @RequestBody Post updatedPost) {
+        Optional<Post> existingPostOptional = postRepository.findById(id);
+        if (existingPostOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        Post existingPost = existingPostOptional.get();
+        // Update fields as needed
+        existingPost.setText(updatedPost.getText());
+        existingPost.setThreadId(updatedPost.getThreadId());
+        
+        Post savedPost = postRepository.save(existingPost);
+        return ResponseEntity.ok(savedPost);
     }
 }

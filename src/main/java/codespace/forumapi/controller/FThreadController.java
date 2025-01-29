@@ -22,10 +22,8 @@ public class FThreadController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FThread> getFThreadById(@PathVariable int id) {
-        return fthreadRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public List<FThread> getFThreadById(@PathVariable int id) {
+        return fthreadRepository.findById(id);
     }
 
     @PostMapping
@@ -34,24 +32,20 @@ public class FThreadController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FThread> updateFThread(@PathVariable int id, @RequestBody FThread fthread) {
-        return fthreadRepository.findById(id)
-                .map(existingFThread -> {
-                    existingFThread.setTitle(fthread.getTitle());
-                    existingFThread.setContent(fthread.getContent());
-                    return fthreadRepository.save(existingFThread);
-                })
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteFThread(@PathVariable int id) {
-        return fthreadRepository.findById(id)
-                .map(fthread -> {
-                    fthreadRepository.delete(fthread);
-                    return ResponseEntity.ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<FThread> updateFThread(@PathVariable int id, @RequestBody FThread updatedFThread) {
+        List<FThread> existingFThreads = fthreadRepository.findById(id);
+        if (existingFThreads.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        FThread existingFThread = existingFThreads.get(0);
+        // Update fields as needed
+        existingFThread.setForumID(updatedFThread.getForumID());
+        existingFThread.setName(updatedFThread.getName());
+        existingFThread.setText(updatedFThread.getText());
+        // Add more setters as per your FThread model
+        
+        FThread savedFThread = fthreadRepository.save(existingFThread);
+        return ResponseEntity.ok(savedFThread);
     }
 }

@@ -17,8 +17,9 @@ public class PostReactionController {
 
     // Define your endpoints here
     @GetMapping
-    public List<PostReaction> getAllPostReactions() {
-        return postReactionRepository.findAll();
+    public ResponseEntity<List<PostReaction>> getAllPostReactions() {
+        List<PostReaction> postreactions = postReactionRepository.findAll();
+        return ResponseEntity.ok(postreactions);
     }   
 
     @GetMapping("/{id}")

@@ -34,14 +34,14 @@ public class FThreadImageController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FThreadImage> updateFThreadImage(@PathVariable int id, @RequestBody FThreadImage fthreadimageDetails) {
+    public ResponseEntity<FThreadImage> updateFThreadImage(@PathVariable int id, @RequestBody FThreadImage fthreadimage) {
         return fthreadimageRepository.findById(id)
-                .map(fthreadimage -> {
-                    fthreadimage.setFThreadId(fthreadimageDetails.getFThreadId());
-                    fthreadimage.setImgId(fthreadimageDetails.getImgId());
-                    FThreadImage updatedFThreadImage = fthreadimageRepository.save(fthreadimage);
-                    return ResponseEntity.ok(updatedFThreadImage);
+                .map(existingFThreadImage -> {
+                    existingFThreadImage.setFThreadId(fthreadimage.getFThreadId());
+                    existingFThreadImage.setImgId(fthreadimage.getImgId());
+                    return fthreadimageRepository.save(existingFThreadImage);
                 })
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -53,5 +53,5 @@ public class FThreadImageController {
                     return ResponseEntity.noContent().build();
                 })
                 .orElse(ResponseEntity.notFound().build());
-    }   
+    }
 }
