@@ -9,9 +9,9 @@ import codespace.forumapi.model.FThreadReaction;
 
 public interface FThreadReactionRepository extends JpaRepository<FThreadReaction, Integer> {
     
-    @Query("SELECT fr FROM FThreadReaction fr WHERE fr.threadid = :threadId")
+    @Query("SELECT fr FROM FThreadReaction fr WHERE fr.ThreadId = :threadId")
     List<FThreadReaction> findAllByThreadId(int threadId);
 
-    @Query("SELECT fr FROM FThreadReaction fr WHERE fr.userid = :userId")
+    @Query("SELECT fr FROM FThreadReaction fr WHERE fr.UserId = :userId")
     List<FThreadReaction> findAllByUserId(String userId);
 }

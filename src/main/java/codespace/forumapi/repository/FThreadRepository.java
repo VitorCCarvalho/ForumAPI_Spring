@@ -3,24 +3,27 @@ package codespace.forumapi.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import codespace.forumapi.model.FThread;
 
 public interface FThreadRepository extends JpaRepository<FThread, Integer> {
 
-    @Query("SELECT f FROM FThread f WHERE f.id = :id")
-    List<FThread> findById(int id);
+    @Query("SELECT f FROM FThread f WHERE f.Id = :id")
+    List<FThread> getForumById(int id);
     
-    @Query("SELECT f FROM FThread f WHERE f.forumid = :forumid")
+    @Query("SELECT f FROM FThread f WHERE f.ForumID = :forumId")
     List<FThread> findAllByForumId(int forumId);
     
-    @Query("SELECT f FROM FThread f WHERE f.userid = :userid")
+    @Modifying
+    @Transactional
+    @Query("SELECT f FROM FThread f WHERE f.UserId = :userId")
     List<FThread> findAllByUserId(String userId);
 
-    @Query("UPDATE FThread f SET f.text = :text WHERE f.id = :id")
-    void updateText(String text, int id);
-
-    @Query("DELETE FROM FThread f WHERE f.id = :id")
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM FThread f WHERE f.Id = :id")
     void deleteById(int id);
 }
