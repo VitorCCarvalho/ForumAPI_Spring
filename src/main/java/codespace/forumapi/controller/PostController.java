@@ -39,9 +39,10 @@ public class PostController {
 
     // Create a new post
     @PostMapping
-    public Post createPost(@RequestBody Post post) {
+    public ResponseEntity<Post> createPost(@RequestBody Post post) {
         post.setDateCreated(new Date());
-        return postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+        return ResponseEntity.ok(savedPost);
     }
 
     @PutMapping("/{id}")
@@ -49,14 +50,26 @@ public class PostController {
         Optional<Post> existingPostOptional = postRepository.findById(id);
         if (existingPostOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
+        } else{
+            Post existingPost = existingPostOptional.get();
+            // Update fields as needed
+            existingPost.setText(updatedPost.getText());
+            existingPost.setThreadId(updatedPost.getThreadId());
+            
+            Post savedPost = postRepository.save(existingPost);
+            return ResponseEntity.ok(savedPost);
         }
         
-        Post existingPost = existingPostOptional.get();
-        // Update fields as needed
-        existingPost.setText(updatedPost.getText());
-        existingPost.setThreadId(updatedPost.getThreadId());
         
-        Post savedPost = postRepository.save(existingPost);
-        return ResponseEntity.ok(savedPost);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deletePost(@PathVariable int id) {
+        if(!postRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        } else{
+            postRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
     }
 }

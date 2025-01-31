@@ -1,6 +1,7 @@
 package codespace.forumapi.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,30 +23,43 @@ public class FThreadController {
     }
 
     @GetMapping("/{id}")
-    public List<FThread> getFThreadById(@PathVariable int id) {
-        return fthreadRepository.findById(id);
+    public ResponseEntity<FThread> getFThreadById(@PathVariable int id) {
+        return fthreadRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public FThread createFThread(@RequestBody FThread fthread) {
-        return fthreadRepository.save(fthread);
+    public ResponseEntity<FThread> createFThread(@RequestBody FThread fthread) {
+        FThread createdFThread = fthreadRepository.save(fthread);
+        return ResponseEntity.ok(createdFThread);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<FThread> updateFThread(@PathVariable int id, @RequestBody FThread updatedFThread) {
-        List<FThread> existingFThreads = fthreadRepository.findById(id);
+        Optional<FThread> existingFThreads = fthreadRepository.findById(id);
         if (existingFThreads.isEmpty()) {
             return ResponseEntity.notFound().build();
+        } else{
+            FThread existingFThread = existingFThreads.get();
+            // Update fields as needed
+            existingFThread.setForumID(updatedFThread.getForumID());
+            existingFThread.setName(updatedFThread.getName());
+            existingFThread.setText(updatedFThread.getText());
+            // Add more setters as per your FThread model
+            
+            FThread savedFThread = fthreadRepository.save(existingFThread);
+            return ResponseEntity.ok(savedFThread);
         }
-        
-        FThread existingFThread = existingFThreads.get(0);
-        // Update fields as needed
-        existingFThread.setForumID(updatedFThread.getForumID());
-        existingFThread.setName(updatedFThread.getName());
-        existingFThread.setText(updatedFThread.getText());
-        // Add more setters as per your FThread model
-        
-        FThread savedFThread = fthreadRepository.save(existingFThread);
-        return ResponseEntity.ok(savedFThread);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteFThread(@PathVariable int id) {
+        if(!fthreadRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        } else{
+            fthreadRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
     }
 }

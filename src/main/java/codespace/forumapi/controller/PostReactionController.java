@@ -1,6 +1,7 @@
 package codespace.forumapi.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,28 +31,29 @@ public class PostReactionController {
     }
 
     @PostMapping
-    public PostReaction createPostReaction(@RequestBody PostReaction postreaction) {
-        return postReactionRepository.save(postreaction);
+    public ResponseEntity<PostReaction> createPostReaction(@RequestBody PostReaction postreaction) {
+        return ResponseEntity.ok(postReactionRepository.save(postreaction));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<PostReaction> updatePostReaction(@PathVariable int id, @RequestBody PostReaction postreactionDetails) {
-        return postReactionRepository.findById(id)
-                .map(postreaction -> {
-                    postreaction.setReaction(postreactionDetails.getReaction());
-                    return postReactionRepository.save(postreaction);
-                })
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Optional<PostReaction> existingPostReactionOptional = postReactionRepository.findById(id);
+        if (existingPostReactionOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else{
+            PostReaction existingPostReaction = existingPostReactionOptional.get();
+            existingPostReaction.setReaction(postreactionDetails.getReaction());
+            return ResponseEntity.ok(postReactionRepository.save(existingPostReaction));
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletePostReaction(@PathVariable int id) {
-        return postReactionRepository.findById(id)
-                .map(postreaction -> {
-                    postReactionRepository.delete(postreaction);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        if(!postReactionRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        } else{
+            postReactionRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
     }
 }

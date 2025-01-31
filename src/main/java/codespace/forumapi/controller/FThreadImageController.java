@@ -29,8 +29,8 @@ public class FThreadImageController {
     }
 
     @PostMapping
-    public FThreadImage createFThreadImage(@RequestBody FThreadImage fthreadimage) {
-        return fthreadimageRepository.save(fthreadimage);
+    public ResponseEntity<FThreadImage> createFThreadImage(@RequestBody FThreadImage fthreadimage) {
+        return ResponseEntity.ok(fthreadimageRepository.save(fthreadimage));
     }
 
     @PutMapping("/{id}")
@@ -47,11 +47,11 @@ public class FThreadImageController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteFThreadImage(@PathVariable int id) {
-        return fthreadimageRepository.findById(id)
-                .map(fthreadimage -> {
-                    fthreadimageRepository.delete(fthreadimage);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+       if(!fthreadimageRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        } else{
+            fthreadimageRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
     }
 }

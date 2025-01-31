@@ -6,43 +6,62 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.google.gson.Gson;
+import org.springframework.http.ResponseEntity;
 
 import codespace.forumapi.model.Forum;
 import codespace.forumapi.repository.ForumRepository;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/forum")
 public class ForumController {
 	
 	@Autowired
 	private ForumRepository forumRepository;
 	
 
-	@GetMapping("/forum")
-	public List<Forum> getAllForums() {
-		return forumRepository.getAllForums();
+	@GetMapping
+	public ResponseEntity<List<Forum>> getAllForums() {
+		return ResponseEntity.ok(forumRepository.getAllForums());
 	}
 
-	@GetMapping("/forum/{id}")
-	public Forum getForumById(@PathVariable int id) {
-		return forumRepository.getForumById(id).get();
+	@GetMapping("/{id}")
+	public ResponseEntity<Forum> getForumById(@PathVariable int id) {
+		return forumRepository.getForumById(id)
+				.map(forum -> ResponseEntity.ok(forum))
+				.orElse(ResponseEntity.notFound().build());
 	}
 
-	@PostMapping("/forum")
-	public Forum createForum(@RequestBody Forum forum) {
-		return forumRepository.save(forum);
+	@PostMapping
+	public ResponseEntity<Forum> createForum(@RequestBody Forum forum) {
+		return ResponseEntity.ok(forumRepository.save(forum));
 	}
 	
-	@PutMapping("/forum/{id}")
-	public Forum updateForum(@PathVariable int id, @RequestBody Forum forum) {
-		return forumRepository.save(forum);
+	@PutMapping("/{id}")
+	public ResponseEntity<Forum> updateForum(@PathVariable int id, @RequestBody Forum forum) {
+		Optional<Forum> existingForums = forumRepository.getForumById(id);
+		if (existingForums.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		} else{
+			Forum updatedForum = existingForums.get();
+			updatedForum.setName(forum.getName());
+			updatedForum.setDescription(forum.getDescription());
+			
+			return ResponseEntity.ok(forumRepository.save(updatedForum));
+		}
 	}
 	
-	@DeleteMapping("/forum/{id}")
-	public void deleteForum(@PathVariable int id) {
-		forumRepository.deleteById(id);
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Forum> deleteForum(@PathVariable int id) {
+		if (!forumRepository.existsById(id)) {
+			return ResponseEntity.notFound().build();
+		} else{
+			forumRepository.deleteById(id);
+			return ResponseEntity.ok().build();
+		}
 	}
 }
